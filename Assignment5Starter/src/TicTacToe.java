@@ -133,6 +133,38 @@ public class TicTacToe {
     // Return an ArrayList of game states of each turn -- in other words, the gameHistory
     private static ArrayList<char[][]> runTwoPlayerGame(String[] playerNames) {
         // TODO
+        Scanner in = new Scanner(System.in);
+
+        char [][] state = new char[getInitialGameState().length] [getInitialGameState()[0].length];
+
+        Random chooseWhoIsFirst = new Random();
+        int selectFirstChoice = chooseWhoIsFirst.nextInt(2);
+        System.out.println(playerNames[selectFirstChoice] + " gets to go first!");
+
+        boolean gameOver = false;
+
+        while(!gameOver) {
+
+            if (selectFirstChoice == 1) {
+                runPlayerMove(playerNames[selectFirstChoice], playerOneSymbol, state);
+                selectFirstChoice = 2;
+            } else {
+                runPlayerMove(playerNames[selectFirstChoice], playerTwoSymbol, state);
+                selectFirstChoice = 1;
+            }
+            displayGameFromState(state);
+
+            if(checkWin(state)){
+                gameOver = true;
+            }
+            else if (checkDraw(state)){
+                gameOver = true;
+            }
+
+        }
+
+
+
 
         return null;
     }
@@ -149,9 +181,13 @@ public class TicTacToe {
     // Repeatedly prompts player for move in current state, returning new state after their valid move is made
     private static char[][] runPlayerMove(String playerName, char playerSymbol, char[][] currentState) {
         Scanner sc = new Scanner(System.in);
-        // TODO
+        char [][] newCurrentState = new char[currentState.length][currentState[0].length];
+        int [] inBounds = getInBoundsPlayerMove(playerName);
+        if(checkValidMove(inBounds, currentState)){
+            newCurrentState = makeMove(inBounds, playerSymbol, currentState);
+        }
 
-        return null;
+        return newCurrentState;
     }
 
     // Repeatedly prompts player for move. Returns [row, column] of their desired move such that row & column are on
@@ -159,15 +195,31 @@ public class TicTacToe {
     private static int[] getInBoundsPlayerMove(String playerName) {
         Scanner sc = new Scanner(System.in);
         // TODO
-
-        return null;
+        int playerRow, playerCol;
+        int [] validMove = new int [2];
+        System.out.println(playerName + "'s turn");
+        System.out.println(playerName + " enter a row: ");
+        playerRow = sc.nextInt();
+        while(!(playerRow <= 3 && playerRow >= 1)){
+            System.out.println("Enter a row in bounds: ");
+            playerRow = sc.nextInt();
+            validMove[0] = playerRow;
+        }
+        System.out.println(playerName + " enter a column: ");
+        playerCol = sc.nextInt();
+        while(!(playerCol <= 3 && playerCol >= 1)){
+            System.out.println("Enter a column in bounds: ");
+            playerCol = sc.nextInt();
+            validMove[1] = playerCol;
+        }
+        return validMove;
     }
 
     // Given a [row, col] move, return true if a space is unclaimed.
     // Doesn't need to check whether move is within bounds of the board.
     private static boolean checkValidMove(int[] move, char[][] state) {
         // TODO
-        return false;
+        return (state[move[0]][move[1]] == emptySpaceSymbol);
     }
 
     // Given a [row, col] move, the symbol to add, and a game state,
@@ -176,7 +228,13 @@ public class TicTacToe {
         // TODO:
         // Hint: Make use of Arrays.copyOf() somehow to copy a 1D array easily
         // You may need to use it multiple times for a 1D array
-        return null;
+        char [][] newState = new char[currentState.length][currentState[0].length];
+        for (int i = 0; i < currentState.length; i++) {
+            newState[i] = Arrays.copyOf(currentState[i], currentState[i].length);
+        }
+        newState[move[0]][move[1]] = symbol;
+
+        return newState;
     }
 
     // Given a state, return true if some player has won in that state
