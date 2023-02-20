@@ -152,12 +152,12 @@ public class TicTacToe {
 
         while(!gameOver) {
 
-            if (selectFirstChoice == 1) {
+            if (selectFirstChoice == 0) {
                 runPlayerMove(playerNames[selectFirstChoice], playerOneSymbol, state);
-                selectFirstChoice = 2;
+                selectFirstChoice = 1;
             } else {
                 runPlayerMove(playerNames[selectFirstChoice], playerTwoSymbol, state);
-                selectFirstChoice = 1;
+                selectFirstChoice = 0;
             }
             displayGameFromState(state);
 
