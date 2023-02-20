@@ -136,12 +136,19 @@ public class TicTacToe {
         Scanner in = new Scanner(System.in);
 
         char [][] state = new char[getInitialGameState().length] [getInitialGameState()[0].length];
+        ArrayList<char[][]> gameHistory = new ArrayList<char[][]>();
 
         Random chooseWhoIsFirst = new Random();
         int selectFirstChoice = chooseWhoIsFirst.nextInt(2);
         System.out.println(playerNames[selectFirstChoice] + " gets to go first!");
 
         boolean gameOver = false;
+        if (selectFirstChoice == 1){
+            selectFirstChoice = 0;
+        }else {
+            selectFirstChoice = 1;
+        }
+
 
         while(!gameOver) {
 
