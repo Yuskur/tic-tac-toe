@@ -351,6 +351,33 @@ public class TicTacToe {
     // Given a state, simply checks whether all spaces are occupied. Does not care or check if a player has won.
     private static boolean checkDraw(char[][] state) {
         // TODO
+
+        boolean openSpace = false;
+        // Horizontals
+        for (int i = 0; i < state.length; i++) {
+            char what = state[i][0];
+            int count = 0;
+            for (int j = 0; j < state[0].length; j++) {
+                if(state[i][j] == what && state[i][j] == emptySpaceSymbol){
+                    openSpace = true;
+                    break;
+                }
+            }
+        }
+        // Verticals
+        for (int i = 0; i < state.length; i++) {
+            char what = state[0][i];
+            int count = 0;
+            for (int j = 0; j < state.length; j++) {
+                if(state[j][i] == what && state[j][i] == emptySpaceSymbol){
+                    openSpace = true;
+                    break;
+                }
+            }
+        }
+
+
+
         return false;
     }
 
