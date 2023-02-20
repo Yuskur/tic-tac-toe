@@ -1,4 +1,7 @@
+import com.sun.security.jgss.GSSUtil;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -39,18 +42,13 @@ public class TicTacToe {
             String playerTwo;
             if (mainMenuChoice == '2' )
             {
-                System.out.println(" ");
+                System.out.println();
                 System.out.println("Enter player 1 name: ");
                 playerOne = in.next();
                 System.out.println("Enter player 2 name: ");
                 playerTwo = in.next();
                 String[] playerNames = new String[]{playerOne,playerTwo};
-                System.out.println("Tossing a coin to decide who goes first!");
-                Random chooseWhoIsFirst = new Random();
-                int selectFirstChoice = chooseWhoIsFirst.nextInt(2);
-                System.out.println(playerNames[selectFirstChoice] + " gets to go first!");
                 runTwoPlayerGame(playerNames);
-                System.out.println(displayGameFromState(getInitialGameState()));
             }
             else if (mainMenuChoice == '1')
             {
@@ -68,13 +66,13 @@ public class TicTacToe {
             else if (mainMenuChoice == 'D')
             {
                 System.out.println("Placeholder");
-
             }
             else
             {
                 System.out.println("Invalid input please try again");
             }
         }
+        System.out.println("Thank you for playing, have a good day!");
     }
 
     // Given a state, return a String which is the textual representation of the tic-tac-toe board at that state.
@@ -106,11 +104,11 @@ public class TicTacToe {
 
             if (i == getInitialGameState().length -1)
             {
-                 boardDisplay =  boardDisplay.concat((""));
+                boardDisplay =  boardDisplay.concat((""));
             }
             else
             {
-               boardDisplay = boardDisplay.concat("\n" + "----------" + "\n");
+                boardDisplay = boardDisplay.concat("\n" + "----------" + "\n");
             }
 
         }
@@ -133,10 +131,17 @@ public class TicTacToe {
     // Return an ArrayList of game states of each turn -- in other words, the gameHistory
     private static ArrayList<char[][]> runTwoPlayerGame(String[] playerNames) {
         // TODO
+
         Scanner in = new Scanner(System.in);
 
         char [][] state = new char[getInitialGameState().length] [getInitialGameState()[0].length];
-        ArrayList<char[][]> gameHistory = new ArrayList<char[][]>();
+        ArrayList<char[][]> gameHistory = new ArrayList<>();
+
+        for (int i = 0; i < state.length; i++) {
+            for (int j = 0; j < state[0].length; j++) {
+                state[i] = Arrays.copyOf(getInitialGameState()[i], getInitialGameState().length);
+            }
+        }
 
         Random chooseWhoIsFirst = new Random();
         int selectFirstChoice = chooseWhoIsFirst.nextInt(2);
@@ -149,31 +154,39 @@ public class TicTacToe {
             selectFirstChoice = 1;
         }
 
-
+        System.out.println(displayGameFromState(state));
         while(!gameOver) {
 
             if (selectFirstChoice == 0) {
-                runPlayerMove(playerNames[selectFirstChoice], playerOneSymbol, state);
+                state = runPlayerMove(playerNames[selectFirstChoice], playerOneSymbol, state);
+                gameHistory.add(state);
+                System.out.println(displayGameFromState(state));
+                if(checkWin(state)){
+                    System.out.println(playerNames[selectFirstChoice] + " Wins!");
+                    gameOver = true;
+                }
+                else if (checkDraw(state)){
+                    gameOver = true;
+                }
                 selectFirstChoice = 1;
             } else {
-                runPlayerMove(playerNames[selectFirstChoice], playerTwoSymbol, state);
+                state = runPlayerMove(playerNames[selectFirstChoice], playerTwoSymbol, state);
+                gameHistory.add(state);
+                System.out.println(displayGameFromState(state));
+                if(checkWin(state)){
+                    System.out.println(playerNames[selectFirstChoice] + " Wins!");
+                    gameOver = true;
+                }
+                else if (checkDraw(state)){
+                    gameOver = true;
+                }
                 selectFirstChoice = 0;
             }
-            displayGameFromState(state);
 
-            if(checkWin(state)){
-                gameOver = true;
-            }
-            else if (checkDraw(state)){
-                gameOver = true;
-            }
 
         }
 
-
-
-
-        return null;
+        return gameHistory;
     }
 
     // Given the player names (where player two is "Computer"),
@@ -182,17 +195,24 @@ public class TicTacToe {
     private static ArrayList<char[][]> runOnePlayerGame(String[] playerNames) {
         // TODO
 
+
         return null;
     }
 
     // Repeatedly prompts player for move in current state, returning new state after their valid move is made
     private static char[][] runPlayerMove(String playerName, char playerSymbol, char[][] currentState) {
         Scanner sc = new Scanner(System.in);
-        char [][] newCurrentState = new char[currentState.length][currentState[0].length];
+        // TODO
+
+        char [][] newCurrentState;
         int [] inBounds = getInBoundsPlayerMove(playerName);
-        if(checkValidMove(inBounds, currentState)){
-            newCurrentState = makeMove(inBounds, playerSymbol, currentState);
+
+        while(!(checkValidMove(inBounds, currentState))){
+            System.out.println("This is an invalid move!");
+            inBounds= getInBoundsPlayerMove(playerName);
         }
+
+        newCurrentState = makeMove(inBounds, playerSymbol, currentState);
 
         return newCurrentState;
     }
@@ -200,6 +220,7 @@ public class TicTacToe {
     // Repeatedly prompts player for move. Returns [row, column] of their desired move such that row & column are on
     // the 3x3 board, but does not check for availability of that space.
     private static int[] getInBoundsPlayerMove(String playerName) {
+
         Scanner sc = new Scanner(System.in);
         // TODO
         int playerRow, playerCol;
@@ -207,18 +228,24 @@ public class TicTacToe {
         System.out.println(playerName + "'s turn");
         System.out.println(playerName + " enter a row: ");
         playerRow = sc.nextInt();
-        while(!(playerRow <= 3 && playerRow >= 1)){
+
+        validMove[0] = playerRow;
+        while((playerRow < 0  || playerRow > 2))
+        {
             System.out.println("Enter a row in bounds: ");
             playerRow = sc.nextInt();
-            validMove[0] = playerRow;
         }
+        validMove[0] = playerRow;
         System.out.println(playerName + " enter a column: ");
         playerCol = sc.nextInt();
-        while(!(playerCol <= 3 && playerCol >= 1)){
+
+        while((playerCol < 0 || playerCol > 2))
+        {
             System.out.println("Enter a column in bounds: ");
             playerCol = sc.nextInt();
-            validMove[1] = playerCol;
         }
+        validMove[1] = playerCol;
+
         return validMove;
     }
 
@@ -226,6 +253,7 @@ public class TicTacToe {
     // Doesn't need to check whether move is within bounds of the board.
     private static boolean checkValidMove(int[] move, char[][] state) {
         // TODO
+
         return (state[move[0]][move[1]] == emptySpaceSymbol);
     }
 
@@ -235,6 +263,7 @@ public class TicTacToe {
         // TODO:
         // Hint: Make use of Arrays.copyOf() somehow to copy a 1D array easily
         // You may need to use it multiple times for a 1D array
+
         char [][] newState = new char[currentState.length][currentState[0].length];
         for (int i = 0; i < currentState.length; i++) {
             newState[i] = Arrays.copyOf(currentState[i], currentState[i].length);
@@ -251,10 +280,72 @@ public class TicTacToe {
         // you can just check if the same symbol occurs three times in any row, col, or diagonal (except empty space symbol)
         // But either implementation is valid: do whatever makes most sense to you.
 
+        boolean allCheck;
+        boolean horCheck = false;
+        boolean verCheck = false;
+        boolean diagCheck = false;
         // Horizontals
+        for (int i = 0; i < state.length; i++) {
+            char what = state[i][0];
+            int count = 0;
+            for (int j = 0; j < state[0].length; j++) {
+                if(state[i][j] == what && state[i][j] != emptySpaceSymbol){
+                    count++;
+                }
+            }
+            if(count == 3){
+                horCheck = true;
+                break;
+            }
+        }
         // Verticals
+        for (int i = 0; i < state.length; i++) {
+            char what = state[0][i];
+            int count = 0;
+            for (int j = 0; j < state.length; j++) {
+                if(state[j][i] == what && state[j][i] != emptySpaceSymbol){
+                    count++;
+                }
+            }
+            if(count == 3){
+                verCheck = true;
+                break;
+            }
+        }
+
         // Diagonals
-        return false;
+        for (int i = 0; i < state.length; i++) {
+            char what = state[i][i];
+            char what2 = state[i][(state[0].length - 1) - i];
+            int count = 0;
+            for (int j = 0; j < state[0].length; j++) {
+                if(state[j][j] == what && state[j][j] != emptySpaceSymbol){
+                    count++;
+                }
+            }
+            if(count == 3){
+                diagCheck = true;
+                break;
+            } else {
+                count = 0;
+            }
+            int count2 = 0;
+            for (int j = state[0].length; j > 0; j--) {
+                if(state[count2][j - 1] == what2 && state[j - 1][j - 1] != emptySpaceSymbol){
+                    count++;
+                    count2++;
+                }
+            }
+            if(count == 3){
+                diagCheck = true;
+                break;
+            }
+
+        }
+
+        allCheck = (horCheck || verCheck || diagCheck);
+
+        return allCheck;
     }
 
     // Given a state, simply checks whether all spaces are occupied. Does not care or check if a player has won.
@@ -301,5 +392,6 @@ public class TicTacToe {
         // Hint for the above: which symbol appears after one turn is taken?
 
         // Hint: iterate over gameHistory using a loop
+
     }
 }
