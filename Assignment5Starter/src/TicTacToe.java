@@ -24,14 +24,15 @@ public class TicTacToe {
 
         Scanner in = new Scanner(System.in);
 
+        String playerOne ="";
+        String playerTwo = "";
+        String [] playerNames = {playerOne,playerTwo};
+        ArrayList<char [][]> gameHistorySaveArea = new ArrayList<>();
+
 
         char mainMenuChoice = ' ';
         while( mainMenuChoice != 'Q')
         {
-
-            String[] playerNames = new String [2];
-            ArrayList<char [][] >
-
             System.out.println("Welcome to the game of Tic Tac Toe, choose one of the following options from below: ");
             System.out.println("1. Single player");
             System.out.println("2. Two player");
@@ -41,8 +42,6 @@ public class TicTacToe {
 
             mainMenuChoice = in.next().charAt(0);
 
-            String playerOne;
-            String playerTwo;
             if (mainMenuChoice == '2' )
             {
                 System.out.println();
@@ -50,22 +49,28 @@ public class TicTacToe {
                 playerOne = in.next();
                 System.out.println("Enter player 2 name: ");
                 playerTwo = in.next();
-                playerNames = new String[]{playerOne,playerTwo};
-                runTwoPlayerGame(playerNames);
+                playerNames[0] = playerOne;
+                playerNames[1] = playerTwo;
+                gameHistorySaveArea = runTwoPlayerGame(playerNames);
+
             }
             else if (mainMenuChoice == '1')
             {
                 System.out.println(" ");
                 System.out.println("Enter player 1 name: ");
                 playerOne = in.next();
-                playerNames = new String[]{playerOne,"Computer"};
-                System.out.println("Tossing a coin to decide who goes first!");
-                runOnePlayerGame(playerNames);
+                playerNames[0] = playerOne;
+                playerNames[1] = "Computer";
+                gameHistorySaveArea = runOnePlayerGame(playerNames);
 
             }
             else if (mainMenuChoice == 'D')
             {
-                runGameHistory(playerNames,  );
+                if(gameHistorySaveArea.isEmpty()){
+                    System.out.println("no prior game please try again");
+                } else{
+                    runGameHistory(playerNames, gameHistorySaveArea);
+                }
             }
             //fix this
             else
@@ -526,6 +531,7 @@ public class TicTacToe {
         char[][] move = gameHistory.get(0);
         String firstPlayer = "";
 
+        //get the first player
         for (int i = 0; i < move.length; i++) {
             for (int j = 0; j < move[0].length; j++) {
                 if(move[i][j] == 'X'){
