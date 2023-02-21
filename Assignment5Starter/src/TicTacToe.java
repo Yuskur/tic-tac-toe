@@ -29,6 +29,9 @@ public class TicTacToe {
         while( mainMenuChoice != 'Q')
         {
 
+            String[] playerNames = new String [2];
+            ArrayList<char [][] >
+
             System.out.println("Welcome to the game of Tic Tac Toe, choose one of the following options from below: ");
             System.out.println("1. Single player");
             System.out.println("2. Two player");
@@ -47,7 +50,7 @@ public class TicTacToe {
                 playerOne = in.next();
                 System.out.println("Enter player 2 name: ");
                 playerTwo = in.next();
-                String[] playerNames = new String[]{playerOne,playerTwo};
+                playerNames = new String[]{playerOne,playerTwo};
                 runTwoPlayerGame(playerNames);
             }
             else if (mainMenuChoice == '1')
@@ -55,18 +58,16 @@ public class TicTacToe {
                 System.out.println(" ");
                 System.out.println("Enter player 1 name: ");
                 playerOne = in.next();
-                String[] playerNames = new String[]{playerOne,"Computer"};
+                playerNames = new String[]{playerOne,"Computer"};
                 System.out.println("Tossing a coin to decide who goes first!");
-                Random chooseWhoIsFirst = new Random();
-                int selectFirstChoice = chooseWhoIsFirst.nextInt(2);
-                System.out.println(playerNames[selectFirstChoice] + " gets to go first!");
                 runOnePlayerGame(playerNames);
 
             }
             else if (mainMenuChoice == 'D')
             {
-                System.out.println("Placeholder");
+                runGameHistory(playerNames,  );
             }
+            //fix this
             else
             {
                 System.out.println("Invalid input please try again");
@@ -145,7 +146,6 @@ public class TicTacToe {
 
         Random chooseWhoIsFirst = new Random();
         int selectFirstChoice = chooseWhoIsFirst.nextInt(2);
-        System.out.println(playerNames[selectFirstChoice] + " gets to go first!");
 
         boolean gameOver = false;
         if (selectFirstChoice == 1){
@@ -153,6 +153,7 @@ public class TicTacToe {
         }else {
             selectFirstChoice = 1;
         }
+        System.out.println(playerNames[selectFirstChoice] + " gets to go first!");
 
         System.out.println(displayGameFromState(state));
         while(!gameOver) {
@@ -166,6 +167,7 @@ public class TicTacToe {
                     gameOver = true;
                 }
                 else if (checkDraw(state)){
+                    System.out.println("It's a draw!");
                     gameOver = true;
                 }
                 selectFirstChoice = 1;
@@ -178,12 +180,11 @@ public class TicTacToe {
                     gameOver = true;
                 }
                 else if (checkDraw(state)){
+                    System.out.println("It's a draw!");
                     gameOver = true;
                 }
                 selectFirstChoice = 0;
             }
-
-
         }
 
         return gameHistory;
@@ -195,8 +196,63 @@ public class TicTacToe {
     private static ArrayList<char[][]> runOnePlayerGame(String[] playerNames) {
         // TODO
 
+        Scanner in = new Scanner(System.in);
 
-        return null;
+        char [][] state = new char[getInitialGameState().length] [getInitialGameState()[0].length];
+        ArrayList<char[][]> gameHistory = new ArrayList<>();
+
+        for (int i = 0; i < state.length; i++) {
+            for (int j = 0; j < state[0].length; j++) {
+                state[i] = Arrays.copyOf(getInitialGameState()[i], getInitialGameState().length);
+            }
+        }
+
+        Random chooseWhoIsFirst = new Random();
+        int selectFirstChoice = chooseWhoIsFirst.nextInt(2);
+
+        boolean gameOver = false;
+        if (selectFirstChoice == 1){
+            selectFirstChoice = 0;
+        }else {
+            selectFirstChoice = 1;
+        }
+        System.out.println(playerNames[selectFirstChoice] + " gets to go first!");
+
+        System.out.println(displayGameFromState(state));
+        while(!gameOver) {
+
+            if (selectFirstChoice == 0) {
+                state = runPlayerMove(playerNames[selectFirstChoice], playerOneSymbol, state);
+                gameHistory.add(state);
+                System.out.println(displayGameFromState(state));
+                if(checkWin(state)){
+                    System.out.println(playerNames[selectFirstChoice] + " Wins!");
+                    gameOver = true;
+                }
+                else if (checkDraw(state)){
+                    System.out.println("It's a draw!");
+                    gameOver = true;
+                }
+                selectFirstChoice = 1;
+            } else {
+                state = getCPUMove(state);
+                gameHistory.add(state);
+                System.out.println(displayGameFromState(state));
+                if(checkWin(state)){
+                    System.out.println(playerNames[selectFirstChoice] + " Wins!");
+                    gameOver = true;
+                }
+                else if (checkDraw(state)){
+                    System.out.println("It's a draw!");
+                    gameOver = true;
+                }
+                selectFirstChoice = 0;
+            }
+
+
+        }
+        return gameHistory;
+
     }
 
     // Repeatedly prompts player for move in current state, returning new state after their valid move is made
@@ -209,7 +265,7 @@ public class TicTacToe {
 
         while(!(checkValidMove(inBounds, currentState))){
             System.out.println("This is an invalid move!");
-            inBounds= getInBoundsPlayerMove(playerName);
+            inBounds = getInBoundsPlayerMove(playerName);
         }
 
         newCurrentState = makeMove(inBounds, playerSymbol, currentState);
@@ -331,7 +387,7 @@ public class TicTacToe {
             }
             int count2 = 0;
             for (int j = state[0].length; j > 0; j--) {
-                if(state[count2][j - 1] == what2 && state[j - 1][j - 1] != emptySpaceSymbol){
+                if(state[count2][j - 1] == what2 && state[count2][j - 1] != emptySpaceSymbol){
                     count++;
                     count2++;
                 }
@@ -352,33 +408,17 @@ public class TicTacToe {
     private static boolean checkDraw(char[][] state) {
         // TODO
 
-        boolean openSpace = false;
+        boolean openSpace = true;
         // Horizontals
         for (int i = 0; i < state.length; i++) {
-            char what = state[i][0];
-            int count = 0;
             for (int j = 0; j < state[0].length; j++) {
-                if(state[i][j] == what && state[i][j] == emptySpaceSymbol){
-                    openSpace = true;
+                if(state[i][j] == emptySpaceSymbol){
+                    openSpace = false;
                     break;
                 }
             }
         }
-        // Verticals
-        for (int i = 0; i < state.length; i++) {
-            char what = state[0][i];
-            int count = 0;
-            for (int j = 0; j < state.length; j++) {
-                if(state[j][i] == what && state[j][i] == emptySpaceSymbol){
-                    openSpace = true;
-                    break;
-                }
-            }
-        }
-
-
-
-        return false;
+        return openSpace;
     }
 
     // Given a game state, return a new game state with move from the AI
@@ -388,27 +428,92 @@ public class TicTacToe {
 
         // Hint: you can call makeMove() and not end up returning the result, in order to "test" a move
         // and see what would happen. This is one reason why makeMove() does not modify the state argument
+        //call the move here
+
 
         // Determine all available spaces
+        ArrayList<int[]> spaces = getValidMoves(gameState);
+        int[] centerSpace = {1, 1};
+        int[] corner1 = {0, 0};
+        int[] corner2 = {0, 2};
+        int[] corner3 = {2, 0};
+        int[] corner4 = {2, 2};
+        boolean gotMove = false;
 
         // If there is a winning move available, make that move
 
-        // If not, check if opponent has a winning move, and if so, make a move there
 
-        // If not, move on center space if possible
-
-        // If not, move on corner spaces if possible
-
+        for (int [] space: spaces)  {
+            if (checkWin(makeMove(space, playerTwoSymbol, gameState))) {
+                gameState = makeMove(space, playerTwoSymbol, gameState);
+                gotMove = true;
+                System.out.println("found a winning spot!");
+                break;
+            }
+        }
+        if (!gotMove) {
+            // If not, check if opponent has a winning move, and if so, make a move there
+            for (int [] space: spaces) {
+                if ((checkWin(makeMove(space, playerOneSymbol, gameState)))) {
+                    gameState = makeMove(space, playerTwoSymbol, gameState);
+                    gotMove = true;
+                    System.out.println("found a counter move!");
+                    break;
+                }
+            }
+        }
+        if (!gotMove) {
+            // If not, move on center space if possible
+            for (int [] space: spaces) {
+                Arrays.toString(space);
+                if (Arrays.equals(space, centerSpace)) {
+                    gameState = makeMove(space, playerTwoSymbol, gameState);
+                    gotMove = true;
+                    System.out.println("Taking the center space!");
+                    break;
+                }
+            }
+        }
+        if (!gotMove) {
+            // If not, move on corner spaces if possible
+            for (int [] space: spaces) {
+                Arrays.toString(space);
+                if (Arrays.equals(space, corner1) || Arrays.equals(space, corner2) || Arrays.equals(space, corner3) || Arrays.equals(space, corner4)) {
+                    gameState = makeMove(space, playerTwoSymbol, gameState);
+                    gotMove = true;
+                    System.out.println("Taking the corner space!");
+                    break;
+                }
+            }
+        }
         // Otherwise, move in any available spot
+        if(!gotMove) {
+            gameState = makeMove(spaces.get(0), playerTwoSymbol, gameState);
+            System.out.println("Taking first available space!");
+            }
 
-        return null;
+        return gameState;
     }
 
     // Given a game state, return an ArrayList of [row, column] positions that are unclaimed on the board
     private static ArrayList<int[]> getValidMoves(char[][] gameState) {
         // TODO
-        return null;
+
+        ArrayList<int []> availableMoves = new ArrayList<>();
+
+        // Horizontals
+        for (int i = 0; i < gameState.length; i++) {
+            for (int j = 0; j < gameState[0].length; j++) {
+                int[] space = {i, j};
+                if (checkValidMove(space, gameState)) {
+                    availableMoves.add(space);
+                }
+            }
+        }
+
+        return availableMoves;
     }
+
 
     // Given player names and the game history, display the past game as in the PDF sample code output
     private static void runGameHistory(String[] playerNames, ArrayList<char[][]> gameHistory) {
@@ -417,6 +522,31 @@ public class TicTacToe {
         // Player one always gets 'X' while player two always gets 'O'
         // However, we do not know yet which player went first, but we'll need to know...
         // Hint for the above: which symbol appears after one turn is taken?
+
+        char[][] move = gameHistory.get(0);
+        String firstPlayer = "";
+
+        for (int i = 0; i < move.length; i++) {
+            for (int j = 0; j < move[0].length; j++) {
+                if(move[i][j] == 'X'){
+                    firstPlayer = playerNames[0];
+                }
+                else if(move[i][j] == 'O'){
+                    firstPlayer = playerNames[1];
+                }
+            }
+        }
+
+        for(char[][] game: gameHistory){
+            System.out.println(firstPlayer + ":");
+            System.out.println(displayGameFromState(game));
+            if(firstPlayer == playerNames[0]){
+                firstPlayer = playerNames[1];
+            }
+            else {
+                firstPlayer = playerNames[0];
+            }
+        }
 
         // Hint: iterate over gameHistory using a loop
 
