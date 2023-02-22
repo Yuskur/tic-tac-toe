@@ -615,7 +615,7 @@ public class TicTacToe {
         System.out.println(playerNames[0] + emptySpaceSymbol + "(" + playerOneSymbol + ")" +
                 emptySpaceSymbol + "vs " + playerNames[1] + emptySpaceSymbol + "(" + playerTwoSymbol + ")");
 
-        //get the first player
+        //get the player that went first and sets them to the current player
         for (int i = 0; i < move.length; i++) {
             for (int j = 0; j < move[0].length; j++) {
                 if(move[i][j] == playerOneSymbol){
@@ -628,7 +628,9 @@ public class TicTacToe {
         }
 
 
+        //goes through the game history and displays the state along with the player that made the move
         for (int i = 0; i < gameHistory.size(); i++) {
+            //displays the initial game state
             if(i == 0){
                 System.out.println(displayGameFromState(gameHistory.get(i)));
             }
@@ -642,6 +644,7 @@ public class TicTacToe {
                 }
             }
         }
+        //checks if the game ended in a win by comparing the last state stored
         if(checkWin(gameHistory.get(gameHistory.size() - 1))){
             if(currentPlayer.equals(playerNames[0])){
                 System.out.println(playerNames[1] + " Wins!");
@@ -649,6 +652,7 @@ public class TicTacToe {
                 System.out.println(playerNames[0] + " Wins!");
             }
         }
+        //checks if the game ended in a draw by comparing the last state stored 
         else if(checkDraw(gameHistory.get(gameHistory.size() - 1))){
             System.out.println("Its a draw!");
         }
